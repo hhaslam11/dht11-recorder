@@ -8,14 +8,14 @@ const org = process.env.ORG;
 const bucket = process.env.BUCKET;
 
 const client = new InfluxDB({ url: process.env.URL, token: token });
-dht11.initialize({
-  test: {
-    fake: {
-      temperature: 21,
-      humidity: 60
-    }
-  }
-});
+// dht11.initialize({
+//   test: {
+//     fake: {
+//       temperature: 21,
+//       humidity: 60
+//     }
+//   }
+// });
 
 const writeApi = client.getWriteApi(org, bucket);
 writeApi.useDefaultTags({ host: 'host1' });
@@ -23,7 +23,7 @@ writeApi.useDefaultTags({ host: 'host1' });
 const mockData = () => {
 
   // fetch temp and humidity from dht11
-  dht11.read(22, 4).then(res => {
+  dht11.read(11, 4).then(res => {
     const temp = new Point('sensors')
     .floatField('temp', res.temperature.toFixed(2));
     
