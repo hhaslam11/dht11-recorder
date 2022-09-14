@@ -8,7 +8,9 @@ I use [Grafana](https://grafana.com/) for displaying the metrics.
 
 #### Dependencies
 node: `16.17.0`
+
 npm: `8.15.0`
+
 python: `3.9.2`
 
 ----
@@ -49,6 +51,9 @@ pm2 save
 ```
 
 View process: `pm2 monit`
+
 Stop process: `pm2 stop 0`
+
 Start process: `pm2 start 0`
+
 View the [docs](https://pm2.keymetrics.io/docs/usage/quick-start/) for more actions
