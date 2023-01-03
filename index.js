@@ -44,4 +44,4 @@ const run = () => {
 
 };
 
-setInterval(run, 3000);
+setInterval(run, 30000);
