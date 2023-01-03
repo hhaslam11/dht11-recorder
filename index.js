@@ -1,4 +1,4 @@
-const { InfluxDB, Point } = require('@influxdata/influxdb-client');
+const { InfluxDB, Point, setLogger } = require('@influxdata/influxdb-client');
 const dht11 = require("node-dht-sensor").promises;
 require('dotenv').config();
 
@@ -11,21 +11,37 @@ const client = new InfluxDB({ url: process.env.URL, token: token });
 
 const writeApi = client.getWriteApi(org, bucket);
 
-const mockData = () => {
+const pins = [4, 17];
 
-  // fetch temp and humidity from dht11
-  dht11.read(11, 4).then(res => {
-    
-    const temp = new Point('sensors').floatField('temp', res.temperature.toFixed(2));
-    const humidity = new Point('sensors').floatField('hum', res.humidity.toFixed(2));
-    
-    writeApi.writePoint(temp);
-    writeApi.writePoint(humidity);
+const saveDatapoint = (data, sensorName) => {
+  console.log(`setting point for ${sensorName} (${data.temperature.toFixed(0)}c; ${data.humidity.toFixed(0)}%)`);
 
-    console.log(`setting point (${temp}; ${humidity}`);
+  const temp = new Point('sensors')
+    .tag('sensor', sensorName)
+    .floatField('temp', data.temperature.toFixed(2));
+
+  const humidity = new Point('sensors')
+    .tag('sensor', sensorName)
+    .floatField('hum', data.humidity.toFixed(2));
+
+  writeApi.writePoint(temp);
+  writeApi.writePoint(humidity);
+};
+
+const run = () => {
+
+  // fetch temp and humidity from each sensor
+  pins.forEach(pin => {
     
-  }).catch(console.err);
+    dht11.read(11, pin).then(res => {
+      saveDatapoint(res, pin);
+    }).catch(e => {
+      console.error('error occured for sensor ' + pin);
+      console.error(e);
+    });
+
+  });
 
 };
 
-setInterval(mockData, 5000);
+setInterval(run, 3000);
